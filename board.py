@@ -1,3 +1,7 @@
+'''
+@author: 20wang
+'''
+
 import numpy as np
 from random import randrange
 
