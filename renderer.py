@@ -3,7 +3,7 @@ import colorama
 TAGS = "abcdefghijklmnopqrstuvwxyz0123456789"
 
 MINE_GLYPH = colorama.Fore.LIGHTBLACK_EX + " * "
-FLAG_GLYPH = colorama.Back.WHITE + colorama.Fore.LIGHTBLACK_EX + " ! "
+FLAG_GLYPH = colorama.Back.LIGHTRED_EX + colorama.Fore.LIGHTWHITE_EX + " ! "
 
 ADJACENT_0_GLYPH = "   "
 ADJACENT_1_GLYPH = colorama.Fore.LIGHTBLUE_EX + " 1 "
