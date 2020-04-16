@@ -1,3 +1,7 @@
+"""
+@author: trevnels
+"""
+
 import colorama
 
 TAGS = "abcdefghijklmnopqrstuvwxyz0123456789"
