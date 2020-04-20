@@ -13,6 +13,7 @@ class Board:
         self.width = w
         self.height = h
         self.number = n
+        self.blank = True
 
         # the board, as seen by the player
         self.play_board = np.full((h, w), -2)
@@ -51,9 +52,19 @@ class Board:
                     if 0 <= x + adj_x < self.width and 0 <= y + adj_y < self.height and not\
                             (adj_x == 0 and adj_y == 0):
                         check_list.append((y + adj_y, x + adj_x))
+
+
             for c in check_list:
+
+                # blank mines in a square around the clicked position
+                if self.blank:
+                    # self.mine_map[c[0],c[1]] = 0.0
+                    pass
+
                 if self.mine_map[c[0], c[1]] == 1.0:
                     m += 1
+
+            self.blank = False
             self.play_board[y, x] = m
 
             # auto-moves on zeroes if no adjacent mines, like real minesweeper does
