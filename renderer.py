@@ -4,11 +4,11 @@
 
 import colorama
 
+from board import Board
+
 TAGS = "abcdefghijklmnopqrstuvwxyz0123456789"
 
-TOP_GLYPH = "┌" + "─" * 18 + "┐"
-SIDE_GLYPH = "│"
-BOTTOM_GLYPH = "└" + "─" * 18 + "┘"
+
 
 
 MINE_GLYPH = colorama.Fore.LIGHTBLACK_EX + " * "
@@ -39,10 +39,13 @@ NUMERIC_GLYPHS = [
 def init():
     colorama.init()
 
-def create_unknown_glyph(tag):
-    return colorama.Back.WHITE + colorama.Fore.LIGHTBLACK_EX + " " + tag + " "
+def create_unknown_glyph(r,c,w):
+    return colorama.Back.WHITE + colorama.Fore.LIGHTBLACK_EX + str(r*w+c) + " " * (3-len(str(r*w+c)))
 
 def render(board):
+    TOP_GLYPH = "┌" + "─" * (board.width*3) + "┐"
+    SIDE_GLYPH = "│"
+    BOTTOM_GLYPH = "└" + "─" * (board.width*3) + "┘"
 
     play_board = board.play_board
     print(TOP_GLYPH)
@@ -53,7 +56,7 @@ def render(board):
 
             if play_board[r][c] == -2:
                 # not uncovered yet
-                buf += create_unknown_glyph(TAGS[c + r * 6])
+                buf += create_unknown_glyph(r,c,board.width)
             elif play_board[r][c] == -3:
                 # you ded
                 buf += MINE_GLYPH
@@ -70,3 +73,20 @@ def render(board):
         print(buf)
 
     print(BOTTOM_GLYPH)
+
+if __name__ == '__main__':
+    board = Board(6,6,4)
+    init()
+    while True:
+        render(board)
+        move = input("> ").split(",")
+
+        idx = int(move[0])
+
+        r = idx // board.width
+        c = idx % board.width
+
+        dead = board.make_move(c, r,int(move[1]))
+        if dead:
+            break
+    render(board)
