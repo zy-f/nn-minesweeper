@@ -14,7 +14,7 @@ class SweepNet(nn.Module):
         self.n_conv_layers = len(filter_list)
         for k, (fsz, nf) in enumerate(filter_list):
             in_ch = inp_layers if k == 0 else getattr(self, f'conv{k}').out_channels
-            setattr(self, f'conv{k+1}', nn.Conv2d(in_channels=in_ch, out_channels=nf, kernel_size=fsz, padding=fsz//2, device=dev)
+            setattr(self, f'conv{k+1}', nn.Conv2d(in_channels=in_ch, out_channels=nf, kernel_size=fsz, padding=fsz//2, device=dev))
         conv_output_size = filter_list[-1][-1]*board_size
         # MAX POOL?
         if pool_size:
@@ -36,6 +36,12 @@ class SweepNet(nn.Module):
             x = self.dropout(F.relu(getattr(self, f'fc{k+1}')(x)))
         x = self.dropout(self.fc_policy(x))
         return self.softmax(x)
-        
-class PolicyLoss():
-    pass
+
+class PolicyLoss(nn.Module):
+    def __init__(self):
+        super(AlphaLoss, self).__init__()
+
+    def forward(self, policy, advantage):
+        # advantage ~= reward - baseline
+        loss = - torch.sum(torch.log( policy * advantage))
+        return loss
