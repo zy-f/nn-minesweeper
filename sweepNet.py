@@ -26,7 +26,7 @@ class SweepNet(nn.Module):
         for k, out_ft in enumerate(fc_dims):
             in_ft = conv_output_size if k == 0 else getattr(self, f'fc{k}').out_features
             setattr(self, f'fc{k+1}', nn.Linear(in_ft, out_ft))
-        self.fc_policy = nn.Linear(fc_dims[-1], board_size*2)
+        self.fc_policy = nn.Linear(fc_dims[-1], board_size*2) # left half = reveal square, right half = flag as mine
         self.softmax = nn.LogSoftmax(dim=-1)
     
     def forward(self, x):
