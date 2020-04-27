@@ -11,6 +11,10 @@ class AIAgent(object):
 
     def get_action(self, s, learning=False):
         policy = self.net.get_policy(s)
+        playable = np.vstack((s[1],s[1])).flatten()
+        policy *= playable
+        policy /= np.sum(policy)
+
         if learning:
             a = np.random.choice(range(len(policy)), p=policy)
         else:
@@ -25,6 +29,7 @@ class AIAgent(object):
         b = Board()
         for k in range(max_turns):
             a, a_play = self.get_action(b.as_state(), learning=True)
+            # r, game_end = b.some_func_name(*a_play)
 
     def make_batch(self, bsz=32, max_turns=36):
         states = []
