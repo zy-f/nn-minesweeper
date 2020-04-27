@@ -40,6 +40,10 @@ class Board:
 
         elif click == 0:
             # checks if game is lost
+
+            if self.blank and self.mine_map[y, x] == 1.0:
+                self.relocate_mine(y,x,y,x)
+
             if self.mine_map[y, x] == 1.0:
                 self.play_board[y, x] = -3
                 return True
@@ -54,13 +58,12 @@ class Board:
                         check_list.append((y + adj_y, x + adj_x))
 
 
+            if self.blank:
+                    for c in check_list:
+                        # first move, relocate the mine
+                        self.relocate_mine(*c,y,x)
+
             for c in check_list:
-
-                # blank mines in a square around the clicked position
-                if self.blank:
-                    # self.mine_map[c[0],c[1]] = 0.0
-                    pass
-
                 if self.mine_map[c[0], c[1]] == 1.0:
                     m += 1
 
@@ -74,6 +77,26 @@ class Board:
                         self.make_move(c[1], c[0], 0)
 
         return False
+
+    def relocate_mine(self,y,x,yi,xi):
+        self.mine_map[y,x] = 0
+
+        newx = randrange(0,self.width)
+        newy = randrange(0,self.height)
+
+        tries = 0
+        while self.mine_map[newy, newx] == 1 or abs(newx-xi) < 2 or abs(newy-yi) < 2:
+            newx = randrange(0, self.width)
+            newy = randrange(0, self.height)
+
+            tries += 1
+
+            if tries > 100:
+                print("Board is too small for successful relocation. Either expand board or decrease mines.")
+                return
+
+        self.mine_map[newy, newx] = 1
+
 
     # -3: there's a mine here and you lost
     # -2: unexplored space

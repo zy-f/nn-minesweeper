@@ -6,7 +6,7 @@ import colorama
 
 from board import Board
 
-TAGS = "abcdefghijklmnopqrstuvwxyz0123456789"
+TAGS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
 
 
 
@@ -40,7 +40,7 @@ def init():
     colorama.init()
 
 def create_unknown_glyph(r,c,w):
-    return colorama.Back.WHITE + colorama.Fore.LIGHTBLACK_EX + str(r*w+c) + " " * (3-len(str(r*w+c)))
+    return colorama.Back.WHITE + colorama.Fore.LIGHTBLACK_EX + " " + TAGS[r * w + c] + " "
 
 def render(board):
     TOP_GLYPH = "┌" + "─" * (board.width*3) + "┐"
@@ -75,13 +75,13 @@ def render(board):
     print(BOTTOM_GLYPH)
 
 if __name__ == '__main__':
-    board = Board(6,6,4)
+    board = Board(6,6,5)
     init()
     while True:
         render(board)
         move = input("> ").split(",")
 
-        idx = int(move[0])
+        idx = TAGS.index(move[0])
 
         r = idx // board.width
         c = idx % board.width
