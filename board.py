@@ -8,7 +8,7 @@ from random import randrange
 
 # represents a minesweeper board
 class Board:
-    def __init__(self, w, h, n):
+    def __init__(self, w = 6, h = 6, n = 6):
         # information about board, depends on difficulty
         self.width = w
         self.height = h
@@ -32,21 +32,35 @@ class Board:
 
     # changes the play board based on a "click"
     # click = 0 for left click, 1 for right click
-    # returns true if the game is lost, false if not
+    # returns a tuple: (whether game over, reward for move)
     def make_move(self, x, y, click):
 
         if click == 1:
             self.play_board[y, x] = -1
 
-        elif click == 0:
-            # checks if game is lost
+            # checks for game win
+            flags = 0
+            win = True
+            for y_mine in range(self.play_board.shape[0]):
+                for x_mine in range(self.play_board.shape[1]):
+                    if self.play_board[y_mine, x_mine] == -1:
+                        flags += 1
+                    if self.mine_map[y_mine, x_mine] == 1 and not self.play_board[y_mine, x_mine] == -1:
+                        win = False
+            if flags == self.number and win:
+                return True, 1
+            return False, None      # ??????????? bruh what reward?
 
+        elif click == 0:
             if self.blank and self.mine_map[y, x] == 1.0:
                 self.relocate_mine(y,x,y,x)
 
+            # checks if game is lost
             if self.mine_map[y, x] == 1.0:
                 self.play_board[y, x] = -3
-                return True
+                return True, -1
+
+            score = -0.3
 
             # checks adjacent squares for mines
             m = 0
@@ -56,7 +70,8 @@ class Board:
                     if 0 <= x + adj_x < self.width and 0 <= y + adj_y < self.height and not\
                             (adj_x == 0 and adj_y == 0):
                         check_list.append((y + adj_y, x + adj_x))
-
+                        if self.play_board[y + adj_y, x + adj_x] >= 0:
+                            score = 0.9
 
             if self.blank:
                     for c in check_list:
@@ -76,7 +91,7 @@ class Board:
                     if self.play_board[c[0], c[1]] == -2:
                         self.make_move(c[1], c[0], 0)
 
-        return False
+            return False, score
 
     def relocate_mine(self,y,x,yi,xi):
         self.mine_map[y,x] = 0
@@ -104,3 +119,11 @@ class Board:
     # 0+: number of mines adjacent to explored space
     def get_board(self):
         return self.play_board
+
+
+    def as_state(self):
+        b = self.get_board()
+        net_board = np.empty((2,) + b.shape, dtype=np.float32)
+        net_board[0, :, :] = np.maximum(b, 0)
+        net_board[1, :, :] = (b < 0)
+        return net_board
