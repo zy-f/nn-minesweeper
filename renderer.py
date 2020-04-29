@@ -86,7 +86,7 @@ if __name__ == '__main__':
         r = idx // board.width
         c = idx % board.width
 
-        dead = board.make_move(c, r,int(move[1]))
-        if dead:
+        done, _ = board.make_move(c, r,int(move[1]))
+        if done:
             break
     render(board)
