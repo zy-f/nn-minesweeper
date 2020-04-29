@@ -3,6 +3,7 @@
 '''
 
 from sweepNet import *
+import torch
 
 class SweepClassifier(object):
     def __init__(self, net_kwargs, device='cpu'):
@@ -11,8 +12,15 @@ class SweepClassifier(object):
         self.device = device
         # self.dset = None
 
-    def train(self, lr=1e-3):
+    def train(self, batch, lr=1e-3, mini_bsz=32):
         self.optim = torch.optim.Adam(self.net.parameters(), lr=lr)
+        
+        states, actions, advantages = tuple(map(torch.Tensor, batch))
+        actions = actions.long()
+
+        k = 0
+        while k+bsz 
+
         # self.net = default_train(self.net, self.dset, self.loss_func, self.optim, epochs=5, pred_y_func=None)
     
     def get_policy(self, state):
