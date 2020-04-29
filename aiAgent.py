@@ -23,18 +23,35 @@ class AIAgent(object):
         return a, a_play
 
     def simulate_game(self, max_turns=36):
+        timesteps = 0
         states = []
         actions = []
         rewards = []
         b = Board()
         for k in range(max_turns):
             a, a_play = self.get_action(b.as_state(), learning=True)
-            # r, game_end = b.some_func_name(*a_play)
+            r, game_end = b.make_move(*a_play)
 
-    def make_batch(self, bsz=32, max_turns=36):
+            timesteps += 1
+
+            states.append(b.as_state())
+            actions.append(a)
+            rewards.append(r)
+
+            if game_end:
+                break
+
+        return states, actions, rewards, timesteps
+
+    def make_batch(self, bsz=1000, max_turns=36):
         states = []
         actions = []
         rewards = []
+        timesteps = 0
         while timesteps < bsz:
             max_turns = min(max_turns, bsz-timesteps)
-            break
+            s,a,r,t = self.simulate_game(max_turns)
+            timesteps += t
+            states.append(s)
+            actions.append(a)
+            rewards.append(r)
