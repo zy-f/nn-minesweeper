@@ -1,8 +1,9 @@
 '''
-@author: zy-f
+@author: zy-f, trevnels
 '''
 
 from board import Board
+import numpy as np
 # from sweepClassifier import SweepClassifier
 
 class AIAgent(object):
@@ -20,7 +21,22 @@ class AIAgent(object):
         else:
             a = np.argmax(policy)
         a_play = (a % (len(policy)//2) // s.shape[1], a % (len(policy)//2) % s.shape[1], a // (len(policy)//2)) # x,y,click
+
         return a, a_play
+
+    def get_advantage(self, rewards, limit, discount, epsilon=1e-12):
+        returns = self.get_returns(rewards,limit,discount)
+        adv = (returns - np.mean(returns,axis=0)) / (np.std(returns, axis=0) + epsilon)
+        adv = [a[:len(rewards[i])] for i, a in enumerate(adv)]
+        return adv
+
+    def get_returns(self, rewards, limit, discount):
+        returns = np.zeros((len(rewards), limit))
+        for i, re in enumerate(rewards):
+            returns[i, len(re)-1] = re[-1]
+            for j in reversed(range(len(re)-1)):
+                returns[i,j] = re[j] + discount * returns[i,j+1]
+        return returns
 
     def simulate_game(self, max_turns=36):
         timesteps = 0
@@ -43,7 +59,7 @@ class AIAgent(object):
 
         return states, actions, rewards, timesteps
 
-    def make_batch(self, bsz=200, max_turns=36):
+    def make_batch(self, bsz=200, max_turns=36, discount = 0.0):
         states = []
         actions = []
         rewards = []
@@ -55,3 +71,5 @@ class AIAgent(object):
             states.append(s)
             actions.append(a)
             rewards.append(r)
+
+        adv = self.get_advantage(rewards, max_turns, discount)
