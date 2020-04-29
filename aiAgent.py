@@ -73,3 +73,9 @@ class AIAgent(object):
             rewards.append(r)
 
         adv = self.get_advantage(rewards, max_turns, discount)
+
+        statelist = [item for s in states for item in s]
+        actlist = [item for s in actions for item in s]
+        advlist = [item for s in adv for item in s]
+
+        return np.array(statelist), np.array(actlist), np.array(advlist)
