@@ -43,7 +43,7 @@ class AIAgent(object):
 
         return states, actions, rewards, timesteps
 
-    def make_batch(self, bsz=1000, max_turns=36):
+    def make_batch(self, bsz=200, max_turns=36):
         states = []
         actions = []
         rewards = []
