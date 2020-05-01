@@ -7,6 +7,7 @@ import torch
 
 class SweepClassifier(object):
     def __init__(self, net_kwargs, device='cpu'):
+        net_kwargs['dev'] = device
         self.model = SweepNet(**net_kwargs).to(device)
         self.loss_func = PolicyLoss()
         self.device = device
