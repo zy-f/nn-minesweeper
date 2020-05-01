@@ -1,5 +1,5 @@
 '''
-@author: 20wang
+@author: 20wang, zy-f
 '''
 
 from sweepClassifier import *
@@ -7,12 +7,12 @@ from aiAgent import *
 
 if __name__ == '__main__':
     net_kwargs = {
-      'filter_list': [(5,18),(3,36)],
-      'fc_dims': [288,220,220],
-      'inp_layers':2,
-      'board_dims': (6,6),
-      'dropout': .2,
-      'pool_size': 3,
+        'filter_list': [(5,18),(3,36)],
+        'fc_dims': [288,220,220],
+        'inp_layers':2,
+        'board_dims': (6,6),
+        'dropout': .2,
+        'pool_size': 3,
     }
 
     net = SweepClassifier(net_kwargs)
