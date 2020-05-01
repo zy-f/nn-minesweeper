@@ -6,19 +6,18 @@ from sweepNet import *
 import torch
 
 class SweepClassifier(object):
-    def __init__(self, net_kwargs, device='cpu'):
-        net_kwargs['dev'] = device
-        self.model = SweepNet(**net_kwargs).to(device)
+    def __init__(self, net_kwargs, cuda=False):
+        self.device = torch.device('cuda:0' if cuda and torch.cuda.is_available() else 'cpu')
+        self.model = SweepNet(**net_kwargs).to(self.device)
         self.loss_func = PolicyLoss()
-        self.device = device
 
     def train(self, batch, lr=1e-3, mini_bsz=32):
         self.model.train()
         self.optim = torch.optim.Adam(self.model.parameters(), lr=lr)
         states, actions, advantages = batch
-        states = torch.from_numpy(states, device=self.device)
-        actions = torch.from_numpy(actions, device=self.device)
-        advantages = torch.from_numpy(advantages, device=self.device)
+        states = torch.from_numpy(states).to(self.device)
+        actions = torch.from_numpy(actions).to(self.device)
+        advantages = torch.from_numpy(advantages).to(self.device)
 
         k = 0
         loss_size = 0.0
@@ -33,8 +32,8 @@ class SweepClassifier(object):
         print(f"Loss: {loss_size}")
     
     def get_policy(self, state):
-        state = torch.from_numpy(state, device=self.device).unsqueeze(0)
+        state = torch.from_numpy(state).unsqueeze(0).to(self.device)
         self.model.test()
         out = self.model(state)
-        return out.detach()[0]
+        return out.detach().to('cpu')[0]
         

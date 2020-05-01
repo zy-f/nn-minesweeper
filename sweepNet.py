@@ -5,16 +5,17 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import numpy as np
 
 class SweepNet(nn.Module):
-    def __init__(self, filter_list=[(5,18),(3,36)], fc_dims=[288,220,220], inp_layers=2, board_dims=(6,6), dropout=.2, pool_size=3, dev='cpu'):
+    def __init__(self, filter_list=[(5,18),(3,36)], fc_dims=[288,220,220], inp_layers=2, board_dims=(6,6), dropout=.2, pool_size=3):
         super(SweepNet,self).__init__()
         board_size = np.prod(board_dims)
         self.dropout = nn.Dropout(dropout)
         self.n_conv_layers = len(filter_list)
         for k, (fsz, nf) in enumerate(filter_list):
             in_ch = inp_layers if k == 0 else getattr(self, f'conv{k}').out_channels
-            setattr(self, f'conv{k+1}', nn.Conv2d(in_channels=in_ch, out_channels=nf, kernel_size=fsz, padding=fsz//2, device=dev))
+            setattr(self, f'conv{k+1}', nn.Conv2d(in_channels=in_ch, out_channels=nf, kernel_size=fsz, padding=fsz//2))
         conv_output_size = filter_list[-1][-1]*board_size
         # MAX POOL?
         if pool_size:
@@ -39,7 +40,7 @@ class SweepNet(nn.Module):
 
 class PolicyLoss(nn.Module):
     def __init__(self):
-        super(AlphaLoss, self).__init__()
+        super(PolicyLoss, self).__init__()
 
     def forward(self, policy, action, advantage):
         # advantage ~= reward - baseline

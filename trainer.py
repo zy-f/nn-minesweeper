@@ -13,6 +13,7 @@ if __name__ == '__main__':
         'board_dims': (6,6),
         'dropout': .2,
         'pool_size': 3,
+        'cuda': True
     }
 
     net = SweepClassifier(net_kwargs)
