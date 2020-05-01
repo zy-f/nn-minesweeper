@@ -35,5 +35,5 @@ class SweepClassifier(object):
         state = torch.from_numpy(state).unsqueeze(0).to(self.device)
         self.model.test()
         out = self.model(state)
-        return out.detach().to('cpu')[0]
+        return out.detach().to('cpu').numpy()[0]
         
