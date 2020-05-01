@@ -78,4 +78,4 @@ class AIAgent(object):
         actlist = [item for s in actions for item in s]
         advlist = [item for s in adv for item in s]
 
-        return np.array(statelist), np.array(actlist), np.array(advlist)
+        return np.array(statelist, dtype=np.float32), np.array(actlist, dtype=np.int64), np.array(advlist, dtype=np.float32)
