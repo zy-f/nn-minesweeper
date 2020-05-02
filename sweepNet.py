@@ -18,6 +18,7 @@ class SweepNet(nn.Module):
             setattr(self, f'conv{k+1}', nn.Conv2d(in_channels=in_ch, out_channels=nf, kernel_size=fsz, padding=fsz//2))
         conv_output_size = filter_list[-1][-1]*board_size
         # MAX POOL?
+        self.pool_size = pool_size
         if pool_size:
             assert (np.array(board_dims) % pool_size == 0).all()
             self.max_pool = nn.MaxPool2d(pool_size)
@@ -33,6 +34,9 @@ class SweepNet(nn.Module):
     def forward(self, x):
         for k in range(self.n_conv_layers):
             x = self.dropout(F.relu(getattr(self, f'conv{k+1}')(x)))
+        if self.pool_size:
+            x = self.max_pool(x)
+        x = x.view(x.shape[0], -1) # flatten
         for k in range(self.n_fc_layers):
             x = self.dropout(F.relu(getattr(self, f'fc{k+1}')(x)))
         x = self.dropout(self.fc_policy(x))
