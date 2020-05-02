@@ -4,8 +4,10 @@
 
 from sweepClassifier import *
 from aiAgent import *
+from board import Board
+import renderer
 
-if __name__ == '__main__':
+def train_sweeper():
     net_kwargs = {
         'filter_list': [(5,18),(3,36)],
         'fc_dims': [288,220,220],
@@ -24,3 +26,15 @@ if __name__ == '__main__':
         b = agent.make_batch()
         net.train(b)
         torch.save(net.model, 'netsave.pth')
+    
+    ### play game
+    game_board = Board()
+    while True:
+        _, a_play = agent.get_action(b.as_state(), learning=False)
+        _, game_end = game_board.make_move(*a_play)
+        renderer.render(game_board)
+        if game_end:
+            break
+
+if __name__ == '__main__':
+    train_sweeper()
