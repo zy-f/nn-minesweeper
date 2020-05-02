@@ -30,11 +30,11 @@ def train_sweeper():
     ### play game
     game_board = Board()
     while True:
-        _, a_play = agent.get_action(b.as_state(), learning=False)
+        _, a_play = agent.get_action(game_board.as_state(), learning=False)
         _, game_end = game_board.make_move(*a_play)
         renderer.render(game_board)
         if game_end:
-            break
+            return
 
 if __name__ == '__main__':
     train_sweeper()

@@ -32,10 +32,7 @@ class AIAgent(object):
 
     def get_returns(self, rewards, limit, discount):
         returns = np.zeros((len(rewards), limit))
-        print(rewards)
-        print(returns.shape)
         for i, re in enumerate(rewards):
-            print(re)
             returns[i, len(re)-1] = re[-1]
             for j in reversed(range(len(re)-1)):
                 returns[i,j] = re[j] + discount * returns[i,j+1]
