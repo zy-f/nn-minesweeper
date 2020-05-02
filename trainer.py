@@ -15,10 +15,9 @@ def train_sweeper():
         'board_dims': (6,6),
         'dropout': .2,
         'pool_size': 3,
-        'cuda': True
     }
 
-    net = SweepClassifier(net_kwargs)
+    net = SweepClassifier(net_kwargs, cuda=True)
     agent = AIAgent(net)
 
     for i in range(10):
