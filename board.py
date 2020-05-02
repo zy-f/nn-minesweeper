@@ -36,20 +36,36 @@ class Board:
     def make_move(self, x, y, click):
 
         if click == 1:
-            self.play_board[y, x] = -1
+            if self.play_board[y, x] == -2:
+                self.play_board[y,x] = -1
 
-            # checks for game win
-            flags = 0
-            win = True
-            for y_mine in range(self.play_board.shape[0]):
-                for x_mine in range(self.play_board.shape[1]):
-                    if self.play_board[y_mine, x_mine] == -1:
-                        flags += 1
-                    if self.mine_map[y_mine, x_mine] == 1 and not self.play_board[y_mine, x_mine] == -1:
-                        win = False
-            if flags == self.number and win:
-                return True, 1
-            return False, -.7      # ??????????? bruh what reward?
+                done = True
+                for y_ch in range(self.play_board.shape[0]):
+                    for x_ch in range(self.play_board.shape[1]):
+                        if self.play_board[y_ch,x_ch] == -2:
+                            done = False
+
+                if done:
+                    return True, -1
+
+                # checks for game win
+                flags = 0
+                win = True
+                for y_mine in range(self.play_board.shape[0]):
+                    for x_mine in range(self.play_board.shape[1]):
+                        if self.play_board[y_mine, x_mine] == -1:
+                            flags += 1
+                        if self.mine_map[y_mine, x_mine] == 1 and not self.play_board[y_mine, x_mine] == -1:
+                            win = False
+                if flags == self.number and win:
+                    return True, 1
+
+                rew = 0.1 if (self.play_board[y,x] == -1) else -1.0
+
+                return False, rew      # ??????????? bruh what reward?
+            elif self.play_board[y,x] == -1:
+                self.play_board[y,x] = -2
+                return False, -1
 
         elif click == 0:
             if self.blank and self.mine_map[y, x] == 1:
@@ -93,6 +109,15 @@ class Board:
                     if self.play_board[c[0], c[1]] == -2:
                         self.make_move(c[1], c[0], 0)
 
+            done = True
+            for y_ch in range(self.play_board.shape[0]):
+                for x_ch in range(self.play_board.shape[1]):
+                    if self.play_board[y_ch, x_ch] == -2:
+                        done = False
+
+            if done:
+                return True, -1
+
             return False, score
 
     def relocate_mine(self,y,x,yi,xi):
@@ -126,7 +151,8 @@ class Board:
 
     def as_state(self):
         b = self.get_board()
-        net_board = np.empty((2,) + b.shape, dtype=np.float32)
+        net_board = np.empty((3,) + b.shape, dtype=np.float32)
         net_board[0, :, :] = np.maximum(b, 0)
-        net_board[1, :, :] = (b == -2) | (b == -1)
+        net_board[1, :, :] = (b == -2)
+        net_board[2, :, :] = (b == -2)# | (b == -1)
         return net_board

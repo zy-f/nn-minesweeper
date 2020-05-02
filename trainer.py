@@ -11,7 +11,7 @@ def train_sweeper():
     net_kwargs = {
         'filter_list': [(5,18),(3,36)],
         'fc_dims': [288,220,220],
-        'inp_layers':2,
+        'inp_layers':3,
         'board_dims': (6,6),
         'dropout': .2,
         'pool_size': None,
@@ -21,7 +21,7 @@ def train_sweeper():
     print(net.model)
     agent = AIAgent(net)
 
-    for i in range(10):
+    for i in range(50):
         print(f"=====TRAIN LOOP {i+1}=====")
         b = agent.make_batch()
         net.train(b)
@@ -36,9 +36,6 @@ def train_sweeper():
         game_end, _ = game_board.make_move(*a_play)
         renderer.render(game_board)
         if game_end:
-            break
-        k+=1
-        if k > 5:
             break
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 '''
 @author: zy-f, trevnels
 '''
-
+import renderer
 from board import Board
 import numpy as np
 # from sweepClassifier import SweepClassifier
@@ -12,7 +12,8 @@ class AIAgent(object):
 
     def get_action(self, s, learning=False):
         policy = self.net.get_policy(s)
-        playable = np.vstack((s[1],s[1])).flatten()
+        # print(s)
+        playable = np.vstack((s[1],s[2])).flatten()
         policy *= playable
         policy /= np.sum(policy)
 
@@ -44,9 +45,12 @@ class AIAgent(object):
         actions = []
         rewards = []
         b = Board()
+        # print("New game")
         for k in range(max_turns):
             a, a_play = self.get_action(b.as_state(), learning=True)
             game_end, r = b.make_move(*a_play)
+            # print(a_play)
+            # renderer.render(b)
 
             timesteps += 1
 
