@@ -7,15 +7,31 @@ from aiAgent import *
 from board import Board
 import renderer
 
+def play_game(agent, render=False):
+    game_board = Board()
+    reward = 0
+    while True:
+        _, a_play = agent.get_action(game_board.as_state(), learning=False)
+        game_end, r = game_board.make_move(*a_play)
+        reward += r
+        if render:
+            print(a_play)
+            renderer.render(game_board)
+        if game_end:
+            if render:
+                print("Total game reward:", reward)
+            return reward
+
 def train_sweeper():
     net_kwargs = {
         'filter_list': [(5,18),(3,36)],
         'fc_dims': [288,220,220],
         'inp_layers':3,
         'board_dims': (6,6),
-        'dropout': .2,
+        'dropout': 0.05,
         'pool_size': None,
     }
+    n_test_games = 10
 
     net = SweepClassifier(net_kwargs, cuda=True)
     print(net.model)
@@ -24,19 +40,18 @@ def train_sweeper():
     for i in range(80):
         print(f"=====TRAIN LOOP {i+1}=====")
         b = agent.make_batch()
-        net.train(b)
+        net.train(b, lr=1e-4, batch_iters=1)
         torch.save(net.model, 'netsave.pth')
+
+        reward = 0
+        for k in range(n_test_games):
+            reward += play_game(agent, render=False)
+        if i % 10 == 0:
+            play_game(agent, render=True)
+        print(f"Average reward: {reward/n_test_games}")
     
     ### play game
-    game_board = Board()
-    k = 0
-    while True:
-        _, a_play = agent.get_action(game_board.as_state(), learning=False)
-        print(a_play)
-        game_end, _ = game_board.make_move(*a_play)
-        renderer.render(game_board)
-        if game_end:
-            break
+    play_game(agent, render=True)
 
 if __name__ == '__main__':
     train_sweeper()
