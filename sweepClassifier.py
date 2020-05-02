@@ -33,7 +33,7 @@ class SweepClassifier(object):
     
     def get_policy(self, state):
         state = torch.from_numpy(state).unsqueeze(0).to(self.device)
-        self.model.test()
+        self.model.eval()
         out = self.model(state)
         return out.detach().to('cpu').numpy()[0]
         
