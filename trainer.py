@@ -29,12 +29,16 @@ def train_sweeper():
     
     ### play game
     game_board = Board()
+    k = 0
     while True:
         _, a_play = agent.get_action(game_board.as_state(), learning=False)
         print(a_play)
         game_end, _ = game_board.make_move(*a_play)
         renderer.render(game_board)
         if game_end:
+            break
+        k+=1
+        if k > 5:
             break
 
 if __name__ == '__main__':

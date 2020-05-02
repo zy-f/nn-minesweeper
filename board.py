@@ -49,7 +49,7 @@ class Board:
                         win = False
             if flags == self.number and win:
                 return True, 1
-            return False, 0      # ??????????? bruh what reward?
+            return False, -.7      # ??????????? bruh what reward?
 
         elif click == 0:
             if self.blank and self.mine_map[y, x] == 1:
@@ -128,7 +128,5 @@ class Board:
         b = self.get_board()
         net_board = np.empty((2,) + b.shape, dtype=np.float32)
         net_board[0, :, :] = np.maximum(b, 0)
-        net_board[1, :, :] = (b == -2)
-        print(b)
-        print(net_board)
+        net_board[1, :, :] = (b == -2) | (b == -1)
         return net_board
