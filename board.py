@@ -14,6 +14,7 @@ class Board:
         self.height = h
         self.number = n
         self.blank = True
+        self.flag_count = 0
 
         # the board, as seen by the player
         self.play_board = np.full((h, w), -2)
@@ -38,6 +39,7 @@ class Board:
         if click == 1:
             if self.play_board[y, x] == -2:
                 self.play_board[y,x] = -1
+                self.flag_count += 1
 
                 done = True
                 for y_ch in range(self.play_board.shape[0]):
@@ -46,7 +48,7 @@ class Board:
                             done = False
 
                 if done:
-                    return True, -1
+                    return True, -100
 
                 # checks for game win
                 flags = 0
@@ -60,7 +62,7 @@ class Board:
                 if flags == self.number and win:
                     return True, 1
 
-                rew = 0.1 if (self.play_board[y,x] == -1) else -1.0
+                rew = 0.7
 
                 return False, rew      # ??????????? bruh what reward?
             elif self.play_board[y,x] == -1:
@@ -116,7 +118,7 @@ class Board:
                         done = False
 
             if done:
-                return True, -1
+                return True, -100
 
             return False, score
 
@@ -154,5 +156,8 @@ class Board:
         net_board = np.empty((3,) + b.shape, dtype=np.float32)
         net_board[0, :, :] = np.maximum(b, 0)
         net_board[1, :, :] = (b == -2)
-        net_board[2, :, :] = (b == -2)# | (b == -1)
+        if self.flag_count < self.number:
+            net_board[2, :, :] = (b == -2)
+        else:
+            net_board[2, :, :] = 0
         return net_board

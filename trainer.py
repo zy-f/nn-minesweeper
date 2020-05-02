@@ -21,7 +21,7 @@ def train_sweeper():
     print(net.model)
     agent = AIAgent(net)
 
-    for i in range(50):
+    for i in range(80):
         print(f"=====TRAIN LOOP {i+1}=====")
         b = agent.make_batch()
         net.train(b)
