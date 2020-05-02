@@ -6,7 +6,7 @@ from sweepNet import *
 import torch
 
 class SweepClassifier(object):
-    def __init__(self, net_kwargs, cuda=False):
+    def __init__(self, net_kwargs, cuda=True):
         self.device = torch.device('cuda:0' if cuda and torch.cuda.is_available() else 'cpu')
         self.model = SweepNet(**net_kwargs).to(self.device)
         self.loss_func = PolicyLoss()

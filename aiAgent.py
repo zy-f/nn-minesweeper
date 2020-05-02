@@ -32,7 +32,10 @@ class AIAgent(object):
 
     def get_returns(self, rewards, limit, discount):
         returns = np.zeros((len(rewards), limit))
+        print(rewards)
+        print(returns.shape)
         for i, re in enumerate(rewards):
+            print(re)
             returns[i, len(re)-1] = re[-1]
             for j in reversed(range(len(re)-1)):
                 returns[i,j] = re[j] + discount * returns[i,j+1]
@@ -46,7 +49,7 @@ class AIAgent(object):
         b = Board()
         for k in range(max_turns):
             a, a_play = self.get_action(b.as_state(), learning=True)
-            r, game_end = b.make_move(*a_play)
+            game_end, r = b.make_move(*a_play)
 
             timesteps += 1
 
@@ -65,8 +68,8 @@ class AIAgent(object):
         rewards = []
         timesteps = 0
         while timesteps < bsz:
-            max_turns = min(max_turns, bsz-timesteps)
-            s,a,r,t = self.simulate_game(max_turns)
+            turns = min(max_turns, bsz-timesteps)
+            s,a,r,t = self.simulate_game(turns)
             timesteps += t
             states.append(s)
             actions.append(a)

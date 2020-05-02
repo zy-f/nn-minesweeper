@@ -49,10 +49,10 @@ class Board:
                         win = False
             if flags == self.number and win:
                 return True, 1
-            return False, None      # ??????????? bruh what reward?
+            return False, 0      # ??????????? bruh what reward?
 
         elif click == 0:
-            if self.blank and self.mine_map[y, x] == 1.0:
+            if self.blank and self.mine_map[y, x] == 1:
                 self.relocate_mine(y,x,y,x)
 
             # checks if game is lost
@@ -75,8 +75,10 @@ class Board:
 
             if self.blank:
                     for c in check_list:
-                        # first move, relocate the mine
-                        self.relocate_mine(*c,y,x)
+
+                        if self.mine_map[c[0],c[1]] == 1:
+                            # first move, relocate the mine
+                            self.relocate_mine(*c,y,x)
 
             for c in check_list:
                 if self.mine_map[c[0], c[1]] == 1.0:
@@ -94,6 +96,7 @@ class Board:
             return False, score
 
     def relocate_mine(self,y,x,yi,xi):
+
         self.mine_map[y,x] = 0
 
         newx = randrange(0,self.width)
