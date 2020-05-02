@@ -20,7 +20,7 @@ class AIAgent(object):
             a = np.random.choice(range(len(policy)), p=policy)
         else:
             a = np.argmax(policy)
-        a_play = (a % (len(policy)//2) // s.shape[1], a % (len(policy)//2) % s.shape[1], a // (len(policy)//2)) # x,y,click
+        a_play = (a % (len(policy)//2) % s.shape[1], a % (len(policy)//2) // s.shape[1], a // (len(policy)//2)) # x,y,click
 
         return a, a_play
 
