@@ -128,5 +128,5 @@ class Board:
         b = self.get_board()
         net_board = np.empty((2,) + b.shape, dtype=np.float32)
         net_board[0, :, :] = np.maximum(b, 0)
-        net_board[1, :, :] = (b < 0)
+        net_board[1, :, :] = (b == -2)
         return net_board
