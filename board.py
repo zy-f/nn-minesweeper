@@ -50,17 +50,17 @@ class Board:
                 if done:
                     return True, -100
 
-                # checks for game win
-                flags = 0
-                win = True
-                for y_mine in range(self.play_board.shape[0]):
-                    for x_mine in range(self.play_board.shape[1]):
-                        if self.play_board[y_mine, x_mine] == -1:
-                            flags += 1
-                        if self.mine_map[y_mine, x_mine] == 1 and not self.play_board[y_mine, x_mine] == -1:
-                            win = False
-                if flags == self.number and win:
-                    return True, 1
+                # # checks for game win
+                # flags = 0
+                # win = True
+                # for y_mine in range(self.play_board.shape[0]):
+                #     for x_mine in range(self.play_board.shape[1]):
+                #         if self.play_board[y_mine, x_mine] == -1:
+                #             flags += 1
+                #         if self.mine_map[y_mine, x_mine] == 1 and not self.play_board[y_mine, x_mine] == -1:
+                #             win = False
+                # if flags == self.number and win:
+                #     return True, 1
 
                 rew = 0.7
 
@@ -111,16 +111,24 @@ class Board:
                     if self.play_board[c[0], c[1]] == -2:
                         self.make_move(c[1], c[0], 0)
 
+            # done = True
+            # for y_ch in range(self.play_board.shape[0]):
+            #     for x_ch in range(self.play_board.shape[1]):
+            #         if self.play_board[y_ch, x_ch] == -2:
+            #             done = False
+            #
+            # if done:
+            #     return True, -100
+
             done = True
+            new_score = 1
             for y_ch in range(self.play_board.shape[0]):
                 for x_ch in range(self.play_board.shape[1]):
-                    if self.play_board[y_ch, x_ch] == -2:
+                    if self.play_board[y_ch, x_ch] == -2 and not self.mine_map[y_ch, x_ch] == 1:
                         done = False
+                        new_score = score
 
-            if done:
-                return True, -100
-
-            return False, score
+            return done, new_score
 
     def relocate_mine(self,y,x,yi,xi):
 
