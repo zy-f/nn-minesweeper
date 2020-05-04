@@ -43,4 +43,7 @@ class SweepClassifier(object):
         self.model.eval()
         out = self.model(state)
         return out.detach().to('cpu').numpy()[0]
-        
+    
+    def load_model(self, filepath):
+        state_dict = torch.load(filepath)
+        self.model.load_state_dict(state_dict)
