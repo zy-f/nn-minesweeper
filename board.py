@@ -62,9 +62,9 @@ class Board:
                 # if flags == self.number and win:
                 #     return True, 1
 
-                rew = 0.7
+                rew = 1.0 if self.mine_map[y,x] == 1 else -1.0
 
-                return False, rew      # ??????????? bruh what reward?
+                return self.mine_map[y,x] == 0, rew      # ??????????? bruh what reward?
             elif self.play_board[y,x] == -1:
                 self.play_board[y,x] = -2
                 return False, -1
@@ -78,7 +78,7 @@ class Board:
                 self.play_board[y, x] = -3
                 return True, -1
 
-            score = -0.3
+            score = -0.4
 
             # checks adjacent squares for mines
             m = 0
@@ -89,7 +89,7 @@ class Board:
                             (adj_x == 0 and adj_y == 0):
                         check_list.append((y + adj_y, x + adj_x))
                         if self.play_board[y + adj_y, x + adj_x] >= 0:
-                            score = 0.9
+                            score = 0.3
 
             if self.blank:
                     for c in check_list:
@@ -110,6 +110,7 @@ class Board:
                 for c in check_list:
                     if self.play_board[c[0], c[1]] == -2:
                         self.make_move(c[1], c[0], 0)
+                return False, 0.5
 
             # done = True
             # for y_ch in range(self.play_board.shape[0]):
@@ -164,7 +165,7 @@ class Board:
         net_board = np.empty((3,) + b.shape, dtype=np.float32)
         net_board[0, :, :] = np.maximum(b, 0)
         net_board[1, :, :] = (b == -2)
-        if self.flag_count < self.number:
+        if self.flag_count < self.number and not self.blank:
             net_board[2, :, :] = (b == -2)
         else:
             net_board[2, :, :] = 0

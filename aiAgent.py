@@ -13,17 +13,26 @@ class AIAgent(object):
     def get_action(self, s, learning=False):
         policy = self.net.get_policy(s)
         # print(s)
-        playable = np.vstack((s[1],s[2]*False)).flatten()
+        playable = np.vstack((s[1],s[2])).flatten()
         policy *= playable
+        temp_policy = policy
         policy /= np.sum(policy)
 
-        if learning:
-            a = np.random.choice(range(len(policy)), p=policy)
-        else:
-            a = np.argmax(policy)
-        a_play = (a % (len(policy)//2) % s.shape[1], a % (len(policy)//2) // s.shape[1], a // (len(policy)//2)) # x,y,click
+        try:
+            if learning:
+                a = np.random.choice(range(len(policy)), p=policy)
+            else:
+                a = np.argmax(policy)
+            a_play = (a % (len(policy)//2) % s.shape[1], a % (len(policy)//2) // s.shape[1], a // (len(policy)//2)) # x,y,click
 
-        return a, a_play
+            return a, a_play
+        except:
+            print("Predivided policy:")
+            print(temp_policy)
+            print("Divided policy:")
+            print(policy)
+            0/0
+
 
     def get_advantage(self, rewards, limit, discount, epsilon=1e-12):
         returns = self.get_returns(rewards,limit,discount)

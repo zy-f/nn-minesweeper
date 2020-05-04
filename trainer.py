@@ -39,17 +39,18 @@ def train_sweeper(pretrained_path=None):
     print(net.model)
     agent = AIAgent(net)
 
-    for i in range(80):
+    for i in range(50000):
         print(f"=====TRAIN LOOP {i+1}=====")
         b = agent.make_batch(bsz=1000)
         net.train(b, lr=1e-4, batch_iters=2)
-        torch.save(net.model.state_dict(), 'netsave.pth')
 
         reward = 0
         for k in range(n_test_games):
             reward += play_game(agent, render=False)
         if i % 10 == 0:
             play_game(agent, render=True)
+            torch.save(net.model.state_dict(), 'netsave.pth')
+            print("Saved network")
         print(f"Average reward: {reward/n_test_games}")
     
     ### play game
