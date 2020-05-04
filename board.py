@@ -16,6 +16,9 @@ class Board:
         self.blank = True
         self.flag_count = 0
 
+        # rewards for certain actions
+        self.rewards = {"win": 1, "loss": -1, "progress": 0.9, "noprogress": -0.3, "YOLO": -0.3, "flagcorrect": 0, "flagincorrect": 0}
+
         # the board, as seen by the player
         self.play_board = np.full((h, w), -2)
 
@@ -37,18 +40,9 @@ class Board:
     def make_move(self, x, y, click):
 
         if click == 1:
-            if self.play_board[y, x] == -2:
+            if self.play_board[y, x] == -2 and self.flag_count < self.number:
                 self.play_board[y,x] = -1
                 self.flag_count += 1
-
-                done = True
-                for y_ch in range(self.play_board.shape[0]):
-                    for x_ch in range(self.play_board.shape[1]):
-                        if self.play_board[y_ch,x_ch] == -2:
-                            done = False
-
-                if done:
-                    return True, -100
 
                 # # checks for game win
                 # flags = 0
@@ -62,12 +56,18 @@ class Board:
                 # if flags == self.number and win:
                 #     return True, 1
 
-                rew = 0.7
+                if self.mine_map[y, x] == 1:
+                    return False, self.rewards["flagcorrect"]
+                else:
+                    return False, self.rewards["flagincorrect"]
 
-                return False, rew      # ??????????? bruh what reward?
-            elif self.play_board[y,x] == -1:
-                self.play_board[y,x] = -2
-                return False, -1
+            else:
+                return False, self.rewards["noprogress"]
+
+            # unflag
+            # elif self.play_board[y,x] == -1:
+            #     self.play_board[y,x] = -2
+            #     return False, -1
 
         elif click == 0:
             if self.blank and self.mine_map[y, x] == 1:
@@ -76,9 +76,9 @@ class Board:
             # checks if game is lost
             if self.mine_map[y, x] == 1.0:
                 self.play_board[y, x] = -3
-                return True, -1
+                return True, self.rewards['loss']
 
-            score = -0.3
+            score = self.rewards['YOLO']
 
             # checks adjacent squares for mines
             m = 0
@@ -89,7 +89,7 @@ class Board:
                             (adj_x == 0 and adj_y == 0):
                         check_list.append((y + adj_y, x + adj_x))
                         if self.play_board[y + adj_y, x + adj_x] >= 0:
-                            score = 0.9
+                            score = self.rewards['progress']
 
             if self.blank:
                     for c in check_list:
@@ -120,8 +120,9 @@ class Board:
             # if done:
             #     return True, -100
 
+            # checks if game has been one
             done = True
-            new_score = 1
+            new_score = self.rewards['win']
             for y_ch in range(self.play_board.shape[0]):
                 for x_ch in range(self.play_board.shape[1]):
                     if self.play_board[y_ch, x_ch] == -2 and not self.mine_map[y_ch, x_ch] == 1:
