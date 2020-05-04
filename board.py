@@ -17,7 +17,15 @@ class Board:
         self.flag_count = 0
 
         # rewards for certain actions
-        self.rewards = {"win": 1, "loss": -1, "progress": 0.9, "noprogress": -0.3, "YOLO": -0.3, "flagcorrect": 0, "flagincorrect": 0}
+        self.rewards = {
+            "win": 1, 
+            "loss": -1, 
+            "progress": 0.9, 
+            "noprogress": -0.3, 
+            "YOLO": -0.3, 
+            "flagcorrect": 0, 
+            "flagincorrect": 0
+        }
 
         # the board, as seen by the player
         self.play_board = np.full((h, w), -2)
