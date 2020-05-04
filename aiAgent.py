@@ -31,6 +31,8 @@ class AIAgent(object):
             print(temp_policy)
             print("Divided policy:")
             print(policy)
+            print("Board state:")
+            print(s)
             0/0
 
 
