@@ -22,9 +22,9 @@ def play_game(agent, render=False):
                 print("Total game reward:", reward)
             return reward
 
-def train_sweeper():
+def train_sweeper(pretrained_path=None):
     net_kwargs = {
-        'filter_list': [(5,18),(3,36)],
+        'filter_list': [(5,50),(3,25)],
         'fc_dims': [288,220,220],
         'inp_layers':3,
         'board_dims': (6,6),
@@ -34,14 +34,16 @@ def train_sweeper():
     n_test_games = 10
 
     net = SweepClassifier(net_kwargs, cuda=True)
+    if pretrained_path is not None:
+        net.load_model(pretrained_path)
     print(net.model)
     agent = AIAgent(net)
 
     for i in range(80):
         print(f"=====TRAIN LOOP {i+1}=====")
-        b = agent.make_batch()
-        net.train(b, lr=1e-4, batch_iters=1)
-        torch.save(net.model, 'netsave.pth')
+        b = agent.make_batch(bsz=1000)
+        net.train(b, lr=1e-4, batch_iters=2)
+        torch.save(net.model.state_dict(), 'netsave.pth')
 
         reward = 0
         for k in range(n_test_games):
@@ -54,4 +56,4 @@ def train_sweeper():
     play_game(agent, render=True)
 
 if __name__ == '__main__':
-    train_sweeper()
+    train_sweeper(pretrained_path=None)

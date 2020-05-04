@@ -13,7 +13,7 @@ class AIAgent(object):
     def get_action(self, s, learning=False):
         policy = self.net.get_policy(s)
         # print(s)
-        playable = np.vstack((s[1],s[2])).flatten()
+        playable = np.vstack((s[1],s[2]*False)).flatten()
         policy *= playable
         policy /= np.sum(policy)
 
@@ -27,7 +27,8 @@ class AIAgent(object):
 
     def get_advantage(self, rewards, limit, discount, epsilon=1e-12):
         returns = self.get_returns(rewards,limit,discount)
-        adv = (returns - np.mean(returns,axis=0)) / (np.std(returns, axis=0) + epsilon)
+        mean = np.mean(returns,axis=0)
+        adv = (returns - mean*(mean>0)) / (np.std(returns, axis=0) + epsilon)
         adv = [a[:len(rewards[i])] for i, a in enumerate(adv)]
         return adv
 

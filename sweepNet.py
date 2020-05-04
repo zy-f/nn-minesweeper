@@ -46,8 +46,8 @@ class PolicyLoss(nn.Module):
     def __init__(self):
         super(PolicyLoss, self).__init__()
 
-    def forward(self, policy, action, advantage):
+    def forward(self, policy, action, advantage, epsilon=1e-12):
         # advantage ~= reward - baseline
         policy_slice = policy.gather(1, action.view(-1,1))
-        loss = - (torch.log(policy_slice) * (advantage>0) + torch.log(1-policy_slice) * (advantage<0)).mean()
+        loss = - (torch.log(policy_slice+epsilon) * (advantage>0) + torch.log(1-policy_slice+epsilon) * (advantage<0)).mean()
         return loss
