@@ -9,17 +9,29 @@ import numpy as np
 class AIAgent(object):
     def __init__(self, net):
         self.net = net
+    
+    def add_dirichlet_noise(self, p_distrib, noise=.05):
+        noise_distrib = np.random.gamma(noise, 1, len(p_distrib))
+        new_distrib = .75*p_distrib + .25*noise_distrib
+        new_distrib /= np.sum(new_distrib)
+        return new_distrib
 
-    def get_action(self, s, learning=False):
+    def get_action(self, s, learning=False, printing=False):
         policy = self.net.get_policy(s)
-        # print(s)
-        playable = np.vstack((s[1],s[2]*False)).flatten()
+        if learning:
+            policy = self.add_dirichlet_noise(policy)
+        playable = np.vstack((s[-2],s[-1])).flatten()
         policy *= playable
-        policy /= np.sum(policy)
+        if np.max(policy) == 0 or np.isnan(policy).any():
+            policy = playable/np.sum(playable)
+        else:
+            policy /= np.sum(policy)
 
         if learning:
             a = np.random.choice(range(len(policy)), p=policy)
         else:
+            if printing:
+                print(policy.reshape(s[-2:].shape))
             a = np.argmax(policy)
         a_play = (a % (len(policy)//2) % s.shape[1], a % (len(policy)//2) // s.shape[1], a // (len(policy)//2)) # x,y,click
 
@@ -28,7 +40,7 @@ class AIAgent(object):
     def get_advantage(self, rewards, limit, discount, epsilon=1e-12):
         returns = self.get_returns(rewards,limit,discount)
         mean = np.mean(returns,axis=0)
-        adv = (returns - mean*(mean>0)) / (np.std(returns, axis=0) + epsilon)
+        adv = (returns - mean) / (np.std(returns, axis=0) + epsilon)
         adv = [a[:len(rewards[i])] for i, a in enumerate(adv)]
         return adv
 

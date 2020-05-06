@@ -100,11 +100,12 @@ class Board:
                             score = self.rewards['progress']
 
             if self.blank:
-                    for c in check_list:
+                score = self.rewards['progress']
+                for c in check_list:
 
-                        if self.mine_map[c[0],c[1]] == 1:
-                            # first move, relocate the mine
-                            self.relocate_mine(*c,y,x)
+                    if self.mine_map[c[0],c[1]] == 1:
+                        # first move, relocate the mine
+                        self.relocate_mine(*c,y,x)
 
             for c in check_list:
                 if self.mine_map[c[0], c[1]] == 1.0:
@@ -171,7 +172,7 @@ class Board:
     def as_state(self):
         b = self.get_board()
         net_board = np.empty((3,) + b.shape, dtype=np.float32)
-        net_board[0, :, :] = np.maximum(b, 0)
+        net_board[0, :, :] = np.maximum(b, -1)
         net_board[1, :, :] = (b == -2)
         if self.flag_count < self.number:
             net_board[2, :, :] = (b == -2)
